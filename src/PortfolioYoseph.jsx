@@ -176,7 +176,7 @@ export default function PortfolioYoseph() {
                 </Button>
                 <Button variant="outline" className="rounded-2xl" asChild>
                   <a href={`${import.meta.env.BASE_URL}CV_YosephMartinLay.pdf`}
- download className="flex items-center gap-2"> <Download className="h-4 w-4"/> CV (PDF)</a>
+ download="CV_YosephMartinLay.pdf" className="flex items-center gap-2"> <Download className="h-4 w-4"/> CV (PDF)</a>
                 </Button>
               </div>
               <div className="mt-6 flex flex-wrap gap-4 text-slate-300">
