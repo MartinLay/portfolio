@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, Phone, MapPin, Search, Sun, Moon, ExternalLink, Download, Filter } from "lucide-react";
+import { Github, Linkedin, Mail, Phone, MapPin, Search, Sun, Moon, ExternalLink, Download, Filter, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
-
+import logo from './assets/logo.jpg'
 const skills = {
   Languages: ["PHP", "JavaScript", "Python", "Java", "C++"],
   Frameworks: ["Laravel", "CodeIgniter 3", "CodeIgniter 4", "React", "Bootstrap"],
@@ -58,7 +58,7 @@ const projects = [
     stack: ["CodeIgniter 4", "Datatables", "Modal Form"],
     year: "2025",
     description:
-      "Transisi proyek lama ke CI4 dengan arsitektur controller-model yang rapi, filtering admin, dan UI tabel modern.",
+      "Transisi proyek website lama ke CI4 dengan arsitektur controller-model yang rapi, filtering admin, dan UI tabel modern.",
     highlights: ["Service layer", "Admin access filter", "Reusable components"],
     image:
       "data:image/svg+xml;utf8,\
@@ -115,7 +115,9 @@ export default function PortfolioYoseph() {
         (activeTag === "Portfolio" && p.title.toLowerCase().includes("penyanyi")) ||
         (activeTag === "Android" && p.stack.join(" ").toLowerCase().includes("android")) ||
         (activeTag === "PHP" && p.stack.join(" ").toLowerCase().includes("php")) ||
-        activeTag === "Web App" || activeTag === "Admin Panel"; // generic tags
+        (activeTag === "Web App" && p.description.toLowerCase().includes("webs")) ||
+        // activeTag === "Web App" || 
+        activeTag === "Admin Panel"; // generic tags
       return text.includes(q) && tagOk;
     });
 
@@ -136,7 +138,11 @@ export default function PortfolioYoseph() {
         <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 border-b border-white/5">
           <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-teal-400 to-indigo-500" />
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-9 w-9 rounded-2xl object-cover"
+              />
               <span className="font-semibold tracking-wide">Yoseph Martin Lay</span>
             </div>
             <div className="flex items-center gap-2">
@@ -169,17 +175,18 @@ export default function PortfolioYoseph() {
                   <a href="#skills" className="flex items-center gap-2">Keahlian</a>
                 </Button>
                 <Button variant="outline" className="rounded-2xl" asChild>
-                  <a href="#resume" className="flex items-center gap-2"><Download className="h-4 w-4"/> CV (PDF)</a>
+                  <a href="/CV_YosephMartinLay.pdf" download className="flex items-center gap-2"> <Download className="h-4 w-4"/> CV (PDF)</a>
                 </Button>
               </div>
               <div className="mt-6 flex flex-wrap gap-4 text-slate-300">
                 <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4"/> Indonesia</span>
-                <a href="tel:+620000000000" className="inline-flex items-center gap-2 hover:text-white"><Phone className="h-4 w-4"/> +62 8xx-xxxx-xxxx</a>
+                <a href="https://wa.me/6285214872192" className="inline-flex items-center gap-2 hover:text-white"><Phone className="h-4 w-4"/> +62 852-1487-2192</a>
                 <a href="mailto:martinlay99@gmail.com" className="inline-flex items-center gap-2 hover:text-white"><Mail className="h-4 w-4"/> martinlay99@gmail.com</a>
               </div>
               <div className="mt-3 flex gap-3">
-                <a href="https://github.com/yourusername" className="hover:opacity-90" target="_blank" rel="noreferrer"><Github/></a>
-                <a href="https://linkedin.com/in/yourusername" className="hover:opacity-90" target="_blank" rel="noreferrer"><Linkedin/></a>
+                <a href="https://github.com/MartinLay" className="hover:opacity-90" target="_blank" rel="noreferrer"><Github/></a>
+                <a href="https://linkedin.com/in/martinlay99" className="hover:opacity-90" target="_blank" rel="noreferrer"><Linkedin/></a>
+                <a href="https://youtube.com/@Martin_Lay" className="hover:opacity-90" target="_blank" rel="noreferrer"><Youtube/></a>
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="relative">
