@@ -1,8 +1,30 @@
-import PortfolioYoseph from "@/PortfolioYoseph"; // pakai alias @ untuk src/
-import "./output.css"; // hasil build Tailwind v4
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PortfolioYoseph from "@/PortfolioYoseph"; 
+import ProjectDetail from "./ProjectDetail";
+import Layout from "./Layout";
+import "./output.css";
 
-function App() {
-  return <PortfolioYoseph />;
+export default function App() {
+  return (
+    <Router basename="/portfolio">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <PortfolioYoseph />
+            </Layout>
+          }
+        />
+        <Route
+          path="/project/:slug"
+          element={
+            <Layout>
+              <ProjectDetail />
+            </Layout>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
-
-export default App;

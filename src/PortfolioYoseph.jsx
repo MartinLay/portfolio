@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
-import logo from './assets/logo.jpg'
+import { Link } from "react-router-dom";
 const skills = {
   Languages: ["PHP", "JavaScript", "Python", "Java", "C++"],
   Frameworks: ["Laravel", "CodeIgniter 3", "CodeIgniter 4", "React", "Bootstrap"],
@@ -16,8 +16,9 @@ const skills = {
   Testing: ["Manual QA", "Web Testing"],
 };
 
-const projects = [
+export const projects = [
   {
+    slug: "mayken-home-school",
     title: "Sistem Profil & Informasi Akademik – Mayken Home School",
     stack: ["CodeIgniter", "PHP", "MySQL", "CSS"],
     year: "2023–2024",
@@ -28,18 +29,18 @@ const projects = [
       "Cetak rapor dengan page-break CSS",
       "Import/Export data",
     ],
-    image:
-      "data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>\
-        <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%231e3a8a'/><stop offset='100%' stop-color='%2314b8a6'/></linearGradient></defs>\
-        <rect width='100%' height='100%' fill='url(%23g)'/>\
-        <text x='50%' y='52%' font-size='46' text-anchor='middle' fill='white' font-family='Inter, Arial'>Mayken Home School – Academic IS</text>\
-      </svg>",
-    link: "#",
+    image: `${import.meta.env.BASE_URL}projects/mayken1.png`,
+    images: [
+      `${import.meta.env.BASE_URL}projects/mayken1.png`,
+      `${import.meta.env.BASE_URL}projects/mayken2.png`,
+      `${import.meta.env.BASE_URL}projects/mayken3.png`
+    ],
+    link: "https://mayken-home-school.com",
   },
   {
+    slug: "kids-ar-learning",
     title: "Aplikasi Belajar Augmented Reality untuk Anak",
-    stack: ["Unity", "Android Studio"],
+    stack: ["Unity", "Android Studio", "Blender", "Vuforia"],
     year: "2024",
     description:
       "Aplikasi interaktif AR yang menampilkan objek 3D edukatif saat kamera diarahkan ke marker/target.",
@@ -54,8 +55,9 @@ const projects = [
     link: "#",
   },
   {
+    slug: "ci3-to-ci4",
     title: "Migrasi & Refactor: CodeIgniter 3 ➜ CodeIgniter 4",
-    stack: ["CodeIgniter 4", "Datatables", "Modal Form"],
+    stack: ["CodeIgniter 4","PHP", "Datatables", "Modal Form"],
     year: "2025",
     description:
       "Transisi proyek website lama ke CI4 dengan arsitektur controller-model yang rapi, filtering admin, dan UI tabel modern.",
@@ -70,19 +72,14 @@ const projects = [
     link: "#",
   },
   {
+    slug: "singer-portfolio",
     title: "Website Penyanyi – Platform Portofolio Musisi",
     stack: ["Laravel", "MySQL", "Bootstrap"],
     year: "2024",
     description:
       "Website untuk penyanyi/performer dengan halaman profil, jadwal manggung, galeri, dan form booking.",
     highlights: ["Booking form", "CMS sederhana", "SEO dasar"],
-    image:
-      "data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>\
-        <defs><linearGradient id='g4' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%2313b981'/><stop offset='100%' stop-color='%233b82f6'/></linearGradient></defs>\
-        <rect width='100%' height='100%' fill='url(%23g4)'/>\
-        <text x='50%' y='52%' font-size='46' text-anchor='middle' fill='white' font-family='Inter, Arial'>Singer Portfolio Website</text>\
-      </svg>",
+    image: import.meta.env.BASE_URL + "projects/bepi1.png",
     link: "#",
   },
 ];
@@ -135,26 +132,7 @@ export default function PortfolioYoseph() {
     <div className={dark ? "dark" : ""}>
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 dark:text-slate-100 dark:bg-slate-950">
         {/* Navbar */}
-        <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 border-b border-white/5">
-          <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img
-                src={logo}
-                alt="Logo"
-                className="h-9 w-9 rounded-2xl object-cover"
-              />
-              <span className="font-semibold tracking-wide">Yoseph Martin Lay</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setDark((d) => !d)} className="rounded-2xl">
-                {dark ? <Sun className="h-5 w-5"/> : <Moon className="h-5 w-5"/>}
-              </Button>
-              <Button variant="outline" className="rounded-2xl">
-                <a href="#contact" className="flex items-center gap-2"><Mail className="h-4 w-4"/> Contact</a>
-              </Button>
-            </div>
-          </div>
-        </header>
+        
 
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-4 py-14">
@@ -237,38 +215,48 @@ export default function PortfolioYoseph() {
                 <TabsContent value={activeTag} className="mt-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     {filtered.map((p, i) => (
-                      <motion.a
-                        key={p.title}
-                        href={p.link}
-                        target={p.link?.startsWith("http") ? "_blank" : undefined}
-                        rel={p.link?.startsWith("http") ? "noreferrer" : undefined}
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className="rounded-3xl overflow-hidden ring-1 ring-white/10 hover:ring-white/20 bg-white/5 backdrop-blur group"
-                      >
-                        <div className="aspect-[16/9] w-full overflow-hidden">
-                          <img src={p.image} alt={p.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"/>
-                        </div>
-                        <div className="p-5">
-                          <div className="flex items-start justify-between gap-4">
-                            <h3 className="text-lg font-semibold">{p.title}</h3>
-                            <span className="text-xs text-slate-400 shrink-0">{p.year}</span>
-                          </div>
-                          <p className="mt-2 text-sm text-slate-300">{p.description}</p>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {p.stack.map((s) => (
-                              <Badge key={s} variant="secondary" className="rounded-lg bg-white/10 text-white border-white/10">{s}</Badge>
-                            ))}
-                          </div>
-                          <ul className="mt-3 list-disc list-inside text-sm text-slate-300 space-y-1">
-                            {p.highlights.map((h) => (
-                              <li key={h}>{h}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </motion.a>
-                    ))}
+                <motion.div
+                  key={p.slug}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-3xl overflow-hidden ring-1 ring-white/10 hover:ring-white/20 bg-white/5 backdrop-blur group"
+                >
+                  <Link to={`/project/${p.slug}`}>
+                    <div className="aspect-[16/9] w-full overflow-hidden">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-lg font-semibold">{p.title}</h3>
+                        <span className="text-xs text-slate-400 shrink-0">{p.year}</span>
+                      </div>
+                      <p className="mt-2 text-sm text-slate-300">{p.description}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {p.stack.map((s) => (
+                          <Badge
+                            key={s}
+                            variant="secondary"
+                            className="rounded-lg bg-white/10 text-white border-white/10"
+                          >
+                            {s}
+                          </Badge>
+                        ))}
+                      </div>
+                      <ul className="mt-3 list-disc list-inside text-sm text-slate-300 space-y-1">
+                        {p.highlights.map((h) => (
+                          <li key={h}>{h}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+
                   </div>
                 </TabsContent>
               </Tabs>
@@ -278,6 +266,7 @@ export default function PortfolioYoseph() {
 
         {/* Skills */}
         <section id="skills" className="mx-auto max-w-6xl px-4 py-12">
+          {/* <CardHeader><CardTitle className="text-lg">Skills</CardTitle></CardHeader> */}
           <div className="grid md:grid-cols-2 gap-6">
             {Object.entries(skills).map(([cat, list]) => (
               <Card key={cat} className="rounded-3xl bg-white/5 border-white/10">
@@ -356,9 +345,7 @@ export default function PortfolioYoseph() {
         </section>
 
         {/* Footer */}
-        <footer className="py-10 text-center text-sm text-slate-400">
-          © {new Date().getFullYear()} Yoseph Martin Lay — Built with React, Tailwind, shadcn/ui.
-        </footer>
+        
       </div>
     </div>
   );
