@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import logo from "./assets/logo.jpg";
 import { Mail, Sun, Moon } from "lucide-react";
+import { useTheme } from "./ThemeContext"; // Import hook useTheme
 
 export default function Layout({ children }) {
-  const [dark, setDark] = useState(true);
+  const { dark, toggleTheme } = useTheme(); // Menggunakan context
 
   return (
-    <div className={dark ? "dark" : ""}>
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 dark:bg-slate-950">
+    // Hapus conditional className karena sudah diatur di ThemeProvider
+    <div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 dark:bg-slate-950 transition-colors duration-300">
         {/* Navbar */}
         <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 border-b border-white/5">
           <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -20,14 +22,14 @@ export default function Layout({ children }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setDark((d) => !d)}
+                onClick={toggleTheme} // Menggunakan toggleTheme dari context
                 className="rounded-2xl"
               >
                 {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
               <Button variant="outline" className="rounded-2xl">
                 <a href="#contact" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" /> Contact
+                  <Mail className="h-4 w-4" /> Kontak
                 </a>
               </Button>
             </div>

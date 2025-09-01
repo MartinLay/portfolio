@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect  } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, Phone, MapPin, Search, Sun, Moon, ExternalLink, Download, Filter, Youtube } from "lucide-react";
+import { Github, Linkedin, Mail, Phone, MapPin, Search, ExternalLink, Download, Filter, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import { supabase } from "./supabaseClient";
+import { useTheme } from "./ThemeContext";
 const skills = {
   Languages: ["PHP", "JavaScript", "Python", "Java", "C++"],
   Frameworks: ["Laravel", "CodeIgniter 3", "CodeIgniter 4", "React", "Bootstrap"],
@@ -15,74 +17,6 @@ const skills = {
   Tools: ["Git", "Canva", "Android Studio", "Unity", "Blender"],
   Testing: ["Manual QA", "Web Testing"],
 };
-
-export const projects = [
-  {
-    slug: "mayken-home-school",
-    title: "Sistem Profil & Informasi Akademik – Mayken Home School",
-    stack: ["CodeIgniter", "PHP", "MySQL", "CSS"],
-    year: "2023–2024",
-    description:
-      "Website untuk mengelola data akademik (guru, siswa, nilai, rapor) lengkap dengan admin panel dan filtering data.",
-    highlights: [
-      "CRUD lengkap + role-based access",
-      "Cetak rapor dengan page-break CSS",
-      "Import/Export data",
-    ],
-    image: `${import.meta.env.BASE_URL}projects/mayken1.png`,
-    images: [
-      `${import.meta.env.BASE_URL}projects/mayken1.png`,
-      `${import.meta.env.BASE_URL}projects/mayken2.png`,
-      `${import.meta.env.BASE_URL}projects/mayken3.png`
-    ],
-    link: "https://mayken-home-school.com",
-  },
-  {
-    slug: "kids-ar-learning",
-    title: "Aplikasi Belajar Augmented Reality untuk Anak",
-    stack: ["Unity", "Android Studio", "Blender", "Vuforia"],
-    year: "2024",
-    description:
-      "Aplikasi interaktif AR yang menampilkan objek 3D edukatif saat kamera diarahkan ke marker/target.",
-    highlights: ["Marker-based AR", "3D asset optimization", "UX anak"],
-    image:
-      "data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>\
-        <defs><linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%237a3aed'/><stop offset='100%' stop-color='%23f43f5e'/></linearGradient></defs>\
-        <rect width='100%' height='100%' fill='url(%23g2)'/>\
-        <text x='50%' y='52%' font-size='46' text-anchor='middle' fill='white' font-family='Inter, Arial'>Kids AR Learning App</text>\
-      </svg>",
-    link: "#",
-  },
-  {
-    slug: "ci3-to-ci4",
-    title: "Migrasi & Refactor: CodeIgniter 3 ➜ CodeIgniter 4",
-    stack: ["CodeIgniter 4","PHP", "Datatables", "Modal Form"],
-    year: "2025",
-    description:
-      "Transisi proyek website lama ke CI4 dengan arsitektur controller-model yang rapi, filtering admin, dan UI tabel modern.",
-    highlights: ["Service layer", "Admin access filter", "Reusable components"],
-    image:
-      "data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>\
-        <defs><linearGradient id='g3' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%232565c0'/><stop offset='100%' stop-color='%23f59e0b'/></linearGradient></defs>\
-        <rect width='100%' height='100%' fill='url(%23g3)'/>\
-        <text x='50%' y='52%' font-size='46' text-anchor='middle' fill='white' font-family='Inter, Arial'>CI3 ➜ CI4 Modernization</text>\
-      </svg>",
-    link: "#",
-  },
-  {
-    slug: "singer-portfolio",
-    title: "Website Penyanyi – Platform Portofolio Musisi",
-    stack: ["Laravel", "MySQL", "Bootstrap"],
-    year: "2024",
-    description:
-      "Website untuk penyanyi/performer dengan halaman profil, jadwal manggung, galeri, dan form booking.",
-    highlights: ["Booking form", "CMS sederhana", "SEO dasar"],
-    image: import.meta.env.BASE_URL + "projects/bepi1.png",
-    link: "#",
-  },
-];
 
 const tags = [
   "Web App",
@@ -96,43 +30,67 @@ const tags = [
 ];
 
 export default function PortfolioYoseph() {
-  const [dark, setDark] = useState(true);
+  const {dark} = useTheme();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [sort, setSort] = useState("newest");
+  const [projects, setProjects] = useState([]);
+
+  // fetch data dari Supabase
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await supabase.from("projects").select("*").order("id", { ascending: false });
+      if (!error) setProjects(data);
+    };
+    fetchProjects();
+  }, []);
 
   const filtered = useMemo(() => {
-    let list = projects.filter((p) => {
-      const text = (p.title + p.description + p.stack.join(" ")).toLowerCase();
-      const q = query.trim().toLowerCase();
-      const tagOk = activeTag === "all" ||
-        (activeTag === "AR" && p.title.toLowerCase().includes("ar")) ||
-        (activeTag === "Education" && p.description.toLowerCase().includes("eduk")) ||
-        (activeTag === "Migration" && p.title.toLowerCase().includes("migrasi")) ||
-        (activeTag === "Portfolio" && p.title.toLowerCase().includes("penyanyi")) ||
-        (activeTag === "Android" && p.stack.join(" ").toLowerCase().includes("android")) ||
-        (activeTag === "PHP" && p.stack.join(" ").toLowerCase().includes("php")) ||
-        (activeTag === "Web App" && p.description.toLowerCase().includes("webs")) ||
-        // activeTag === "Web App" || 
-        activeTag === "Admin Panel"; // generic tags
-      return text.includes(q) && tagOk;
-    });
+  let list = projects.filter((p) => {
+    const text =
+      (p.title + " " + p.description + " " + (p.stack ? p.stack.join(" ") : "")).toLowerCase();
+    const q = query.trim().toLowerCase();
 
-    if (sort === "newest") {
-      // rely on array order (already newest first)
-      return list;
-    }
-    if (sort === "alphabetical") {
+    // Custom filter per tag
+    const tagOk =
+      activeTag === "all" ||
+      (activeTag === "AR" && p.title.toLowerCase().includes("ar")) ||
+      (activeTag === "Education" && p.description.toLowerCase().includes("eduk")) ||
+      (activeTag === "Migration" && p.title.toLowerCase().includes("migrasi")) ||
+      (activeTag === "Portfolio" && p.title.toLowerCase().includes("penyanyi")) ||
+      (activeTag === "Android" && (p.stack || []).join(" ").toLowerCase().includes("android")) ||
+      (activeTag === "PHP" && (p.stack || []).join(" ").toLowerCase().includes("php")) ||
+      (activeTag === "Web App" && p.description.toLowerCase().includes("webs")) ||
+      activeTag === "Admin Panel"; // fallback generic tag
+
+    return text.includes(q) && tagOk;
+  });
+
+  // Sorting
+  if (sort === "newest") {
+    list = [...list].sort((a, b) => {
+      // Kalau year berupa string range misal "2023–2024"
+      const aYear = parseInt(String(a.year).slice(0, 4), 10) || 0;
+      const bYear = parseInt(String(b.year).slice(0, 4), 10) || 0;
+      return bYear - aYear;
+    });
+  } else if (sort === "oldest") {
+    list = [...list].sort((a, b) => {
+      const aYear = parseInt(String(a.year).slice(0, 4), 10) || 0;
+      const bYear = parseInt(String(b.year).slice(0, 4), 10) || 0;
+      return aYear - bYear;
+    });
+  }
+   if (sort === "alphabetical") {
       return [...list].sort((a, b) => a.title.localeCompare(b.title));
     }
-    return list;
-  }, [query, activeTag, sort]);
+
+  return list;
+}, [projects, query, activeTag, sort]);
+
 
   return (
-    <div className={dark ? "dark" : ""}>
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 dark:text-slate-100 dark:bg-slate-950">
-        {/* Navbar */}
-        
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 dark:text-slate-100 dark:bg-slate-950 transition-colors duration-300">     
 
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-4 py-14">
@@ -181,7 +139,7 @@ export default function PortfolioYoseph() {
           </div>
         </section>
 
-        {/* Controls */}
+        {/* Projects */}
         <section className="mx-auto max-w-6xl px-4" id="projects">
           <Card className="rounded-3xl border-white/10 bg-white/5 backdrop-blur">
             <CardHeader className="pb-2">
@@ -189,12 +147,20 @@ export default function PortfolioYoseph() {
                 <CardTitle className="text-xl">Proyek Terpilih</CardTitle>
                 <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"/>
-                    <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari proyek, stack..." className="pl-8 bg-slate-900/40 border-white/10 rounded-xl"/>
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Cari proyek, stack..."
+                      className="pl-8 bg-slate-900/40 border-white/10 rounded-xl"
+                    />
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="rounded-xl"><Filter className="h-4 w-4 mr-2"/>Sort</Button>
+                      <Button variant="outline" className="rounded-xl">
+                        <Filter className="h-4 w-4 mr-2" />
+                        Sort
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl">
                       <DropdownMenuItem onClick={() => setSort("newest")}>Terbaru</DropdownMenuItem>
@@ -206,57 +172,59 @@ export default function PortfolioYoseph() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeTag} onValueChange={setActiveTag} className="w-full">
-                <TabsList className="flex flex-wrap gap-2 bg-transparent p-0">
-                  <TabsTrigger value="all" className="rounded-xl data-[state=active]:bg-white/10">Semua</TabsTrigger>
+                {/* <TabsList className="flex flex-wrap gap-2 bg-transparent p-0">
+                  <TabsTrigger value="all" className="rounded-xl data-[state=active]:bg-white/10">
+                    Semua
+                  </TabsTrigger>
                   {tags.map((t) => (
-                    <TabsTrigger key={t} value={t} className="rounded-xl data-[state=active]:bg-white/10">{t}</TabsTrigger>
+                    <TabsTrigger
+                      key={t}
+                      value={t}
+                      className="rounded-xl data-[state=active]:bg-white/10"
+                    >
+                      {t}
+                    </TabsTrigger>
                   ))}
-                </TabsList>
+                </TabsList> */}
                 <TabsContent value={activeTag} className="mt-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     {filtered.map((p, i) => (
-                <motion.div
-                  key={p.slug}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="rounded-3xl overflow-hidden ring-1 ring-white/10 hover:ring-white/20 bg-white/5 backdrop-blur group"
-                >
-                  <Link to={`/project/${p.slug}`}>
-                    <div className="aspect-[16/9] w-full overflow-hidden">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-lg font-semibold">{p.title}</h3>
-                        <span className="text-xs text-slate-400 shrink-0">{p.year}</span>
-                      </div>
-                      <p className="mt-2 text-sm text-slate-300">{p.description}</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {p.stack.map((s) => (
-                          <Badge
-                            key={s}
-                            variant="secondary"
-                            className="rounded-lg bg-white/10 text-white border-white/10"
-                          >
-                            {s}
-                          </Badge>
-                        ))}
-                      </div>
-                      <ul className="mt-3 list-disc list-inside text-sm text-slate-300 space-y-1">
-                        {p.highlights.map((h) => (
-                          <li key={h}>{h}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-
+                      <motion.div
+                        key={p.slug}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="rounded-3xl overflow-hidden ring-1 ring-white/10 hover:ring-white/20 bg-white/5 backdrop-blur group"
+                      >
+                        <Link to={`/project/${p.slug}`}>
+                          <div className="aspect-[16/9] w-full overflow-hidden">
+                            <img
+                              src={p.image}
+                              alt={p.title}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            />
+                          </div>
+                          <div className="p-5">
+                            <div className="flex items-start justify-between gap-4">
+                              <h3 className="text-lg font-semibold">{p.title}</h3>
+                              <span className="text-xs text-slate-400 shrink-0">{p.year}</span>
+                            </div>
+                            <p className="mt-2 text-sm text-slate-300">{p.description}</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {(p.stack || []).map((s) => (
+                                <Badge
+                                  key={s}
+                                  variant="secondary"
+                                  className="rounded-lg bg-white/10 text-white border-white/10"
+                                >
+                                  {s}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
                   </div>
                 </TabsContent>
               </Tabs>
@@ -347,6 +315,5 @@ export default function PortfolioYoseph() {
         {/* Footer */}
         
       </div>
-    </div>
   );
 }

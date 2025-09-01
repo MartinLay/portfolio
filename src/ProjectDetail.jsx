@@ -1,17 +1,36 @@
 import { useParams, Link } from "react-router-dom";
-import { projects } from "@/PortfolioYoseph";
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
+
+// Import Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import { Navigation, Pagination } from "swiper/modules";
-
 export default function ProjectDetail() {
   const { slug } = useParams();
-  const project = projects.find((p) => p.slug === slug);
+  const [project, setProject] = useState(null);
 
-  if (!project) return <p className="text-center text-white">Project not found.</p>;
+  useEffect(() => {
+    const fetchProject = async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+      if (!error) setProject(data);
+    };
+    fetchProject();
+  }, [slug]);
+
+  if (!project) return <p className="text-center text-white">Loading...</p>;
+
+  // pastikan kalau `images` berupa array, kalau tidak bungkus jadi array
+  const images = Array.isArray(project.images)
+    ? project.images
+    : [project.image];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
@@ -21,29 +40,20 @@ export default function ProjectDetail() {
           ← Kembali
         </Link>
 
-        {/* Header + Screenshot */}
-        {/* <div className="mt-6 rounded-2xl overflow-hidden shadow-lg border border-white/10">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full max-h-[450px] object-cover"
-          />
-        </div> */}
-        <div className="mt-6">
+        {/* Slider Screenshots */}
+        <div className="mt-6 rounded-2xl overflow-hidden shadow-lg border border-white/10">
           <Swiper
             modules={[Navigation, Pagination]}
             navigation
             pagination={{ clickable: true }}
-            spaceBetween={20}
-            slidesPerView={1}
-            className="rounded-2xl shadow-lg"
+            className="w-full h-[450px]"
           >
-            {project.images && project.images.map((img, idx) => (
+            {images.map((img, idx) => (
               <SwiperSlide key={idx}>
                 <img
                   src={img}
                   alt={`${project.title} screenshot ${idx + 1}`}
-                  className="w-full rounded-2xl"
+                  className="w-full h-[450px] object-cover"
                 />
               </SwiperSlide>
             ))}
@@ -55,32 +65,37 @@ export default function ProjectDetail() {
         <p className="mt-3 text-slate-300 text-lg">{project.description}</p>
 
         {/* Highlights */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">✨ Fitur Utama</h2>
-          <ul className="list-disc list-inside space-y-1 text-slate-300">
-            {project.highlights.map((h) => (
-              <li key={h}>{h}</li>
-            ))}
-          </ul>
-        </div>
+        {project.highlights?.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">✨ Fitur Utama</h2>
+            <ul className="list-disc list-inside space-y-1 text-slate-300">
+              {project.highlights.map((h, i) => (
+                <li key={i}>{h}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Tech Stack */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">🛠️ Tech Stack</h2>
-          <div className="flex flex-wrap gap-2">
-            {project.stack.map((s) => (
-              <span
-                key={s}
-                className="px-3 py-1 rounded-full bg-white/10 text-sm border border-white/10"
-              >
-                {s}
-              </span>
-            ))}
+        {project.stack?.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">🛠️ Tech Stack</h2>
+            <div className="flex flex-wrap gap-2">
+              {project.stack.map((s, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-1 rounded-full bg-white/10 text-sm border border-white/10"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tahun */}
         <p className="mt-6 text-slate-400">📅 Tahun: {project.year}</p>
+        <p className="mt-6 text-slate-400">🔗 Link: <a href={project.link} className="text-teal-400 underline hover:text-teal-300" target="_blank" rel="noopener noreferrer">{project.link}</a></p>
       </div>
     </div>
   );
